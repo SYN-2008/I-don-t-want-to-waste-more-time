@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>小眼 · 设置</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="hd">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1>小眼 · 设置</h1>
+      </div>
+      <p class="sub">这些设置只保存在你这台电脑的浏览器里，不会上传。</p>
+    </header>
+
+    <section class="card">
+      <h2>划选即答（推荐日常就用这个）</h2>
+      <p class="tip">
+        在网页上把题目划选出来 → 旁边冒出一个小按钮 → 点一下，答案直接流式浮在网页上。
+        也可以完全不用鼠标：划选后按 <b>Alt+S</b>；按 <b>Alt+A</b> 是「不管选没选，都抓整页题目来问」。
+      </p>
+      <label class="ck"><input type="checkbox" id="selBubble"><span>划选文字后显示「问小眼」小按钮</span></label>
+      <label class="ck"><input type="checkbox" id="selAutoAsk"><span>划选后立刻自动提问（不点按钮；注意会消耗额度）</span></label>
+      <label class="ck"><input type="checkbox" id="autoCopyAnswer"><span>答案出来自动复制到剪贴板</span></label>
+    </section>
+
+    <section class="card">
+      <h2>题目提取</h2>
+      <label class="f">
+        <span class="lb">默认提取方式</span>
+        <select id="extractMode">
+          <option value="smart">智能识别题目（推荐）</option>
+          <option value="page">整页正文</option>
+        </select>
+        <span class="tip">智能识别会按题号、选项、疑问词判断哪些是题目，把导航、广告、评论、页脚丢掉。识别不到题目时自动退化成整页正文。</span>
+      </label>
+      <label class="ck"><input type="checkbox" id="preferSelection"><span>优先用我在网页上划选的文字（最准）</span></label>
+      <label class="f">
+        <span class="lb">单次最多提取多少字</span>
+        <input type="number" id="maxTextChars" step="1000" min="1000">
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Word 文档存到哪</h2>
+      <p class="tip">选一个文件夹（弹窗会直接定位到桌面），提取出来的题目会自动写成 .docx。</p>
+      <div class="row">
+        <button class="btn primary" id="btnPickDir">选择文件夹</button>
+        <button class="btn" id="btnClearDir">取消已选文件夹</button>
+      </div>
+      <p class="result" id="dirResult">当前：未选择</p>
+      <label class="f">
+        <span class="lb">文档名</span>
+        <input type="text" id="docxName" placeholder="题目提取">
+        <span class="tip">最终文件名形如「题目提取_2026-10-12.docx」。</span>
+      </label>
+      <label class="f">
+        <span class="lb">写入方式</span>
+        <select id="docxMode">
+          <option value="daily">同一天累积到一个文档（推荐）</option>
+          <option value="each">每次提取新建一个文档</option>
+        </select>
+      </label>
+      <label class="ck"><input type="checkbox" id="autoSaveDocx"><span>每次提取后自动写入 Word（不用手点）</span></label>
+      <p class="tip">没选文件夹时，文档会落到浏览器下载目录下的同名子文件夹。</p>
+      <div class="row">
+        <button class="btn danger" id="btnPurge">清空归档文件</button>
+        <span class="result" id="purgeResult"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>送进 DeepSeek</h2>
+      <p class="tip">
+        两条路都留着：① 在侧边栏点「复制题目」，自己去 DeepSeek 网页粘贴 —— 不需要 API Key；
+        ② 点「填到 DeepSeek」，自动打开/切到 chat.deepseek.com 并把题目填进输入框 —— 你只按一下回车；
+        ③ 点「让它直接答」，用下面的 API Key 直接在侧边栏出答案，不用切页面。
+      </p>
+      <label class="f">
+        <span class="lb">API Key（想用「让它直接答」才需要填）</span>
+        <input type="password" id="apiKey" placeholder="sk-...">
+        <span class="tip">在 platform.deepseek.com 创建。只存在本机。</span>
+      </label>
+      <div class="grid2">
+        <label class="f">
+          <span class="lb">模型</span>
+          <input type="text" id="model" list="modelList" placeholder="deepseek-flash">
+          <datalist id="modelList">
+            <option value="deepseek-flash">便宜快速，日常答题够用（推荐）</option>
+            <option value="deepseek-v4-pro">更强但贵约 3 倍，难题才用</option>
+          </datalist>
+          <span class="tip">旧名 deepseek-chat / deepseek-reasoner 已下线，填了会自动换成 deepseek-flash。</span>
+        </label>
+        <label class="f">
+          <span class="lb">接口地址</span>
+          <input type="text" id="baseUrl">
+        </label>
+      </div>
+      <div class="grid2">
+        <label class="f">
+          <span class="lb">随机性</span>
+          <input type="number" id="temperature" step="0.1" min="0" max="2">
+        </label>
+        <label class="f">
+          <span class="lb">最长回答 tokens</span>
+          <input type="number" id="maxTokens" step="128" min="256">
+        </label>
+      </div>
+      <label class="ck">
+        <input type="checkbox" id="thinkingEnabled">
+        <span>开启「思考模式」<span class="tip">（默认关闭。DeepSeek V4.1 默认会先思考再回答，思考内容也计费，会明显变慢变贵，答题场景建议保持关闭。遇到需要推理的难题再打开。）</span></span>
+      </label>
+      <label class="f">
+        <span class="lb">角色设定</span>
+        <textarea id="systemPrompt" rows="4"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn" id="btnTest">测试连接</button>
+        <span class="result" id="testResult"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>跟随模式</h2>
+      <p class="tip">打开后，页面内容稳定下来时会自动提取一次题目。如果开了自动写 Word，就会持续累积到当天的文档里。</p>
+      <label class="ck"><input type="checkbox" id="followMode"><span>默认开启跟随</span></label>
+      <div class="grid2">
+        <label class="f">
+          <span class="lb">页面稳定多久后触发（毫秒）</span>
+          <input type="number" id="followDebounce" step="100" min="300">
+        </label>
+        <label class="f">
+          <span class="lb">两次自动提取最短间隔（毫秒）</span>
+          <input type="number" id="followMinGap" step="1000" min="1000">
+        </label>
+      </div>
+    </section>
+
+    <div class="bottom">
+      <button class="btn primary" id="btnSave">保存设置</button>
+      <button class="btn" id="btnReset">恢复默认</button>
+      <span class="result" id="saveResult"></span>
+    </div>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

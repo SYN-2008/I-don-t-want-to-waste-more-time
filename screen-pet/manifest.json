@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "小眼 · 页面助手",
+  "version": "0.4.2",
+  "description": "选中题目就出答案：把选中的文字直接发给 DeepSeek，答案流式浮在页面上。只对字体里真正加密的字做还原，拿不准就按原文发，并归档成桌面 Word 文档。",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "sidePanel",
+    "scripting",
+    "storage",
+    "downloads",
+    "tabs",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://api.deepseek.com/*",
+    "https://chat.deepseek.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "打开小眼"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/panel.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "ask-selection": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "把选中的文字发给小眼"
+    },
+    "ask-whole-page": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "点选模式：鼠标点一下哪块就问哪块（页面禁止选中/复制也能用）"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["lib/cx-chars.js", "content.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
+    },
+    {
+      "matches": ["https://chat.deepseek.com/*"],
+      "js": ["deepseek.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

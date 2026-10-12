@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>小眼</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header class="top">
+    <div class="avatar" id="avatar"></div>
+    <div class="who">
+      <div class="name">小眼</div>
+      <div class="state" id="state">待机中</div>
+    </div>
+    <button class="icon-btn" id="btnOptions">设置</button>
+  </header>
+
+  <div class="notice" id="notice" hidden>
+    <span id="noticeText"></span>
+    <button class="mini" id="noticeAction" hidden></button>
+  </div>
+
+  <section class="controls">
+    <textarea id="question" rows="2" placeholder="可选：想额外问一句什么？（留空就只提取题目）"></textarea>
+    <div class="row">
+      <button class="mini primary" id="btnExtract">提取题目</button>
+      <button class="mini" id="btnPage">整页正文</button>
+      <label class="toggle" title="打开后页面内容变化时自动提取">
+        <input type="checkbox" id="follow">
+        <span>跟随</span>
+      </label>
+      <span class="page-info" id="pageInfo"></span>
+    </div>
+    <div class="row sub-row">
+      <span class="hintline">最快：网页上划选题目 → 按 <b>Alt+S</b>，答案直接浮在页面上。</span>
+    </div>
+  </section>
+
+  <main class="stream" id="stream">
+    <div class="hint" id="hint">
+      在题目上划选文字 → 按 <b>Alt+S</b>（或点旁边的小按钮），答案会直接浮在网页上。<br>
+      按 <b>Alt+A</b> 是不管有没有选中，都抓整页题目来问。<br>
+      这里用来存档：提取过的题目和回答过的答案都会留在下面。
+    </div>
+  </main>
+
+  <footer class="bottom">
+    <button class="icon-btn" id="btnDiag">诊断</button>
+    <button class="icon-btn" id="btnClearHistory">清空记录</button>
+    <span class="foot-note" id="footNote"></span>
+  </footer>
+
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

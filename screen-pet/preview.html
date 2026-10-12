@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="UKIH2QMvD3kWx31mZNH9OQ">
+<head data-page-node-id="i0GRENiQU2mlrWmTMi6i89">
+<meta charset="utf-8" data-page-node-id="qSUBTC8MJnDGaloz8dASE2">
+<title>小眼 · 划选即答（可以直接试）</title>
+<style>
+  :root { --ink:#1f2328; --dim:#6b7570; --line:#dfe5e2; --brand:#0f6e56; --bg:#f6f8f7; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: 14px; line-height: 1.7;
+  }
+  .banner { background: #0f6e56; color: #fff; padding: 20px 26px; }
+  .banner h1 { margin: 0 0 6px; font-size: 18px; }
+  .banner p { margin: 0; font-size: 13px; opacity: .94; }
+  .banner kbd { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); border-radius: 5px; padding: 1px 6px; font-size: 12px; }
+  h2.sec { margin: 26px 24px 10px; font-size: 15px; }
+  h2.sec span { font-weight: 400; color: var(--dim); font-size: 12.5px; margin-left: 8px; }
+
+  .browser { margin: 0 24px; border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; }
+  .chrome { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-bottom: 1px solid var(--line); background: #fbfcfc; font-size: 12px; color: var(--dim); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .d1{background:#e6a5a5}.d2{background:#e6d3a5}.d3{background:#a5d3b8}
+  .url { margin-left: 8px; padding: 3px 10px; border-radius: 999px; background: #eef2f0; color: #4d5852; font-size: 12px; }
+  .page { display: flex; min-height: 430px; }
+  .tree { width: 200px; flex: none; border-right: 1px solid var(--line); padding: 14px 10px; background: #fafbfb; }
+  .tree h3 { margin: 0 0 10px; font-size: 12px; color: var(--dim); font-weight: 600; }
+  .tree div { padding: 6px 9px; border-radius: 7px; font-size: 12.5px; color: #3d4642; }
+  .tree div.on { background: #e6f2ec; color: var(--brand); font-weight: 600; }
+  .main { flex: 1; padding: 20px 24px; }
+  .main h2 { margin: 0 0 4px; font-size: 16px; }
+  .meta { color: var(--dim); font-size: 12.5px; margin-bottom: 16px; }
+  .frame-tag { display: inline-block; margin-bottom: 10px; font-size: 11.5px; color: #8a9490; border: 1px dashed #cdd8d3; border-radius: 6px; padding: 2px 8px; }
+  .q { margin-bottom: 18px; }
+  .q .stem { font-weight: 600; margin-bottom: 6px; }
+  .q .opt, .q .blank { color: #3d4642; }
+  .tipbar { margin: 14px 24px 30px; padding: 12px 16px; border-radius: 10px; background: #fff8e6; border: 1px solid #f0e0b8; color: #6b5a20; font-size: 13px; }
+  .tipbar b { color: #8a6d1f; }
+
+  /* 插件浮层的复刻 */
+  .pet-bubble {
+    position: fixed; display: flex; align-items: center; gap: 5px;
+    padding: 6px 11px; border: 1px solid #cdd8d3; border-radius: 999px;
+    background: #fff; color: var(--ink); font-size: 12.5px; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(15,40,32,.16); cursor: pointer; user-select: none;
+    z-index: 9999; white-space: nowrap;
+  }
+  .pet-bubble:hover { border-color: #2f8f6f; color: var(--brand); }
+  .pet-bubble .zap { color: var(--brand); }
+  .pet-card {
+    position: fixed; width: 384px; max-height: 62vh; display: flex; flex-direction: column;
+    border: 1px solid #d7e0dc; border-radius: 13px; background: #fff;
+    box-shadow: 0 14px 44px rgba(15,40,32,.22); overflow: hidden; z-index: 9999;
+  }
+  .pet-head { display: flex; align-items: center; gap: 7px; padding: 9px 11px; border-bottom: 1px solid #eef2f0; background: #fbfcfc; cursor: move; user-select: none; }
+  .pet-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); flex: none; }
+  .pet-dot.busy { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+  .pet-label { font-size: 12.5px; font-weight: 600; color: var(--brand); flex: 1; }
+  .pet-hint { font-size: 11px; color: #8a9490; }
+  .pet-x { border: 0; background: transparent; color: #8a9490; font-size: 15px; cursor: pointer; padding: 2px 4px; border-radius: 6px; }
+  .pet-x:hover { background: #f0f3f2; color: var(--ink); }
+  .pet-body { padding: 11px 12px; overflow: auto; flex: 1; font-size: 13.5px; line-height: 1.68; white-space: pre-wrap; }
+  .pet-body p { margin: 0 0 8px; }
+  .pet-body b { color: #0b5b46; }
+  .pet-body .dim { color: #8a9490; font-size: 12.5px; }
+  .pet-caret { display: inline-block; width: 7px; height: 14px; background: var(--brand); vertical-align: -2px; animation: pulse .9s steps(2) infinite; }
+  .pet-foot { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; border-top: 1px solid #eef2f0; background: #fbfcfc; }
+  .pet-btn { border: 1px solid #cdd8d3; background: #fff; color: var(--ink); font-size: 12px; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+  .pet-btn:hover { border-color: #2f8f6f; color: var(--brand); }
+  .pet-btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .pet-toast { position: fixed; right: 18px; bottom: 18px; padding: 9px 13px; border-radius: 10px; background: #1f2328; color: #fff; font-size: 12.5px; z-index: 9999; }
+
+  /* 侧边栏存档区 */
+  .panel-shell { margin: 0 24px 34px; width: 380px; border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+  .panel-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .panel-top .who .name { font-size: 13.5px; font-weight: 600; }
+  .panel-top .who .state { font-size: 12px; color: var(--brand); }
+  .panel-card { padding: 12px 14px; border-bottom: 1px solid #eef2f0; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #e6f2ec; color: var(--brand); margin-right: 6px; }
+  .title { font-size: 12px; color: var(--dim); }
+  .qtext { margin-top: 9px; font-size: 12.5px; color: #3d4642; white-space: pre-wrap; }
+  .answer { margin-top: 9px; font-size: 13px; }
+  .answer b { color: #0b5b46; }
+  .ptools { margin-top: 10px; display: flex; gap: 6px; align-items: center; }
+  .mini { border: 1px solid #cdd8d3; background: #fff; font-size: 12px; padding: 4px 9px; border-radius: 7px; cursor: default; }
+  .mini.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .pmeta { font-size: 11.5px; color: #8a9490; margin-left: auto; }
+</style>
+</head>
+<body data-page-node-id="HFJa9jprQnhb8EM6GVtiSI">
+
+<div class="banner" data-page-node-id="Dl12QpBGFuW8dzkjUUDW9c">
+  <h1 data-page-node-id="GkZO0CiedlH3IWNYXbfCCL">小眼 · 划选即答 —— 这一页是真的能试</h1>
+  <p data-page-node-id="Yg53Ovias0DvIytzigmajD">用鼠标划选下面任意一道题 → 旁边冒出「⚡ 问小眼」→ 点一下，答案直接打在页面上。装进浏览器后按 <kbd data-page-node-id="5akc0jDYAO6dQmkZTymgxo">Alt+S</kbd>，连那一 下都不用点。</p>
+</div>
+
+<h2 class="sec" data-page-node-id="cTEmJhGapFLHq9YXytjFGk">① 主用法：划选 → Alt+S → 答案浮在页面上 <span data-page-node-id="x4iVkVpN9JpydsAGcAjr28">下面可以真的划选试试</span></h2>
+
+<div class="browser" data-page-node-id="wE7nwRa98ToLxuVBMINk1c">
+  <div class="chrome" data-page-node-id="ZRmjUBZCn0HDJj0eufFvR0">
+    <span class="dot d1" data-page-node-id="ZzgpO5oocyU0tBHvbA5HV2"></span><span class="dot d2" data-page-node-id="nKHRB5g1iVo5NTdaJSWmQV"></span><span class="dot d3" data-page-node-id="x5GZFTzw1EZXQATfiOny7s"></span>
+    <span class="url" data-page-node-id="XLNpVSUKwXIaBTnWj7Tac2">mooc1.chaoxing.com/mooc-ans/exam/test</span>
+  </div>
+  <div class="page" data-page-node-id="mn9v2BvcfS5jXGoQRNSLe5">
+    <div class="tree" data-page-node-id="UdN1hHw3dGZowDwtI1XWaK">
+      <h3 data-page-node-id="L4picfVrfHBFIAPB5jzppy">章节目录</h3>
+      <div data-page-node-id="y2pPjlIypqkVc38j7FlT88">第一章 绪论</div>
+      <div data-page-node-id="kHG8FUcuR0VU2feavizomU">第二章 需求与供给</div>
+      <div class="on" data-page-node-id="4sOBMTH5Yr5LQY3hZdeLwo">第三章 消费者行为</div>
+      <div data-page-node-id="FmohtBIxnAn7IqlQOc4Lvy">第四章 生产理论</div>
+      <div data-page-node-id="PWCMsDbq5XPz0sEwIrCCKY">第五章 成本理论</div>
+      <div data-page-node-id="Db2l6U9nyPUoB3mkEv0mnI">第六章 市场结构</div>
+    </div>
+    <div class="main" data-page-node-id="maGBY6y3jJXqzwtErDiJGJ">
+      <span class="frame-tag" data-page-node-id="JxMa8ZSG7zDZfK5hEA5lmQ">内嵌 iframe（学习通的题目一般长在这一层）</span>
+      <h2 data-page-node-id="Z94XA8HgYnOK9ViceGjQht">第三章 课堂练习</h2>
+      <div class="meta" data-page-node-id="Hx0Xv4yRzE0jMkOw5FKxnB">共 3 题 · 满分 30 分 · 不限时</div>
+
+      <div class="q" data-page-node-id="aIVlJ9sCEJ5qYNrXGgbrAQ">
+        <div class="stem" data-page-node-id="yLMKqVKpGHETGiGRwL0yzc">1．下列关于长期平均成本曲线的说法，正确的是（　）</div>
+        <div class="opt" data-page-node-id="3TUjEO7KSYmxcaEC3QBm7R">A．它随产量增加一直下降</div>
+        <div class="opt" data-page-node-id="Z8xvI3CFJ9cJpBL8FHfLU6">B．它下降的原因是规模经济</div>
+        <div class="opt" data-page-node-id="DyqOuSzBqUSVJwW107Hvis">C．它与短期成本曲线无关</div>
+        <div class="opt" data-page-node-id="6fG8procAc1FuZ3W1LZDo3">D．它在任何产量下都等于边际成本</div>
+      </div>
+
+      <div class="q" data-page-node-id="Hz4pTRWtzJLB010ZnMgNS2">
+        <div class="stem" data-page-node-id="hyeOPfrMKwEjBIrJBiONdT">2．填空题：边际报酬递减规律成立的前提是__________。</div>
+      </div>
+
+      <div class="q" data-page-node-id="lxRGbFWXSgEinvYD82WLnq">
+        <div class="stem" data-page-node-id="hv2VIzZ8ai5ykhUgvrws60">3．简述完全竞争市场中厂商的短期停产点是如何决定的。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tipbar" data-page-node-id="zpPx7XYK779wSDtBOoaE8e">
+  <b data-page-node-id="mKhUASfOEOg5jIDltrjkip">这一页不联网、不花钱</b>，答案是提前写好的假数据，只为让你看清交互。真装进浏览器后：划选的文字直接发给 DeepSeek，答案一句句流式打出来，结束时自动复制到剪贴板。
+</div>
+
+<h2 class="sec" data-page-node-id="VYT1q5yuzywxOQ4Q2rn557">② 侧边栏：只当档案柜用 <span data-page-node-id="a8puuneXxyNcqBDz3mDFFo">提取过的题目、问过的答案都留在这儿</span></h2>
+
+<div class="panel-shell" data-page-node-id="5c7EpnEXqDiuv5K2GrH6UA">
+  <div class="panel-top" data-page-node-id="uYH27Q7vue7OOLgUZv1rzY">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true" data-page-node-id="AO1Cx6MzCm3o50m3sHq5Ke">
+      <rect x="3" y="6" width="28" height="24" rx="9" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.6" data-page-node-id="mj1HyyyEKDldiQj9yTsXjt"/>
+      <path d="M9.6 18.2 Q12.5 14.6 15.4 18.2" fill="none" stroke="#27500A" stroke-width="1.5" stroke-linecap="round" data-page-node-id="MqFSRNfC9SXWBkNggqGB5D"/>
+      <path d="M18.6 18.2 Q21.5 14.6 24.4 18.2" fill="none" stroke="#27500A" stroke-width="1.5" stroke-linecap="round" data-page-node-id="rpRS3qYSrheyoWkBgpJBIB"/>
+      <path d="M13 22.6 Q17 26.4 21 22.6" fill="none" stroke="#27500A" stroke-width="1.6" stroke-linecap="round" data-page-node-id="SHsStM5J4hRKVzJXGlcRAh"/>
+    </svg>
+    <div class="who" data-page-node-id="bPOEL4oSy3EZRXTYGkDQGn">
+      <div class="name" data-page-node-id="ikf3lmGsqwA2sB5DHmFi9i">小眼</div>
+      <div class="state" data-page-node-id="hJs2pMhVaNOx0pmBwvenln">答完了</div>
+    </div>
+  </div>
+
+  <div class="panel-card" data-page-node-id="TMEOL2sAsTFYJCnNePn1YJ">
+    <div data-page-node-id="lwJX1GElO88JDwiM89qL6m"><span class="badge" data-page-node-id="HADbYmZWi4BsU5oYpZmWBu">选中的 42 字</span><span class="title" data-page-node-id="gpbxd5kMTsWRuAzekoSufG">第三章 课堂练习 · 10-12 20:14</span></div>
+    <div class="answer" data-page-node-id="oFET1XpSnvcmjW9mYjwe7G">
+      <p data-page-node-id="MjUIEahpms3PrxoCnfYzOK">选 <b data-page-node-id="2TKMeJC9ZizIhyttWAbpQa">B</b>。长期平均成本曲线是短期成本曲线的包络线，先降后升；下降段来自规模经济，上升段来自规模不经济。</p>
+    </div>
+    <div class="ptools" data-page-node-id="4WIbAuD1UzljjfQICcfqh3">
+      <button class="mini primary" data-page-node-id="qk8RrozjaKLcr3gCvxt6YE">复制答案</button>
+      <span class="pmeta" data-page-node-id="aWHAKOihIaGwDmumdaB4OX">deepseek-chat · 318tk</span>
+    </div>
+  </div>
+
+  <div class="panel-card" data-page-node-id="mjoqMuHCYBCms3sj6bcDPX">
+    <div data-page-node-id="iICWStafEueozlPH5UpKpT"><span class="badge" data-page-node-id="f2fLHY7FFbLygI2szHZj9D">题目 3 道</span><span class="title" data-page-node-id="2mXKOmty64fkvhCwy4Uwfr">第三章 课堂练习 · 10-12 20:13</span></div>
+    <div class="qtext" data-page-node-id="S56rBZW2jsmukgynaqyY3K">1．下列关于长期平均成本曲线的说法，正确的是（　）
+A．它随产量增加一直下降
+B．它下降的原因是规模经济
+C．它与短期成本曲线无关
+D．它在任何产量下都等于边际成本</div>
+    <div class="ptools" data-page-node-id="HrN4g7zaYmcU8yLmcfa0td">
+      <button class="mini primary" data-page-node-id="jgna2iP2Gx62GTnCSVV2sg">复制题目</button>
+      <button class="mini" data-page-node-id="FLHohE3xtq6EP0LPH0IGCK">存到 Word</button>
+      <button class="mini" data-page-node-id="HBzrR2miXlpvlrsg1hWzgE">填到 DeepSeek</button>
+      <span class="pmeta" data-page-node-id="9jPvGMuhqaq6V9NUTQnQQR">已写入 桌面\题目提取\</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var bubble = null, bubbleText = '', card = null, cardPos = null, timers = [];
+
+  var ANSWERS = {
+    cost: '选 B。\n\n长期平均成本曲线（LAC）是无数条短期平均成本曲线的包络线，先降后升，不是一直下降（A 错）。下降段来自规模经济，上升段来自规模不经济（B 对）。它由短期成本曲线推导而来，两者有关系（C 错）。只有在该产量对应的最低点上才与边际成本相等，不是任意产量（D 错）。',
+    blank: '其他生产要素的投入量保持不变，只有一种要素连续增加。\n\n换句话说，必须在技术不变、其余要素固定的短期里才成立。如果所有要素同比增加，那是规模报酬问题，不适用这条规律。',
+    stop: '短期停产点：价格低于平均可变成本（AVC）的最低点。\n\n推理链条：厂商按 P = MC 定产量。若 P ≥ AVC，生产能收回全部可变成本并抵掉一部分固定成本，继续生产比停产亏得少；若 P < AVC，连可变成本都收不回，越干越亏，只能停产。所以 P = min AVC 就是停产点，也是厂商短期供给曲线的起点。'
+  };
+
+  function pickAnswer(t) {
+    if (t.indexOf('长期平均成本') >= 0) return ANSWERS.cost;
+    if (t.indexOf('边际报酬') >= 0) return ANSWERS.blank;
+    if (t.indexOf('停产点') >= 0 || t.indexOf('完全竞争') >= 0) return ANSWERS.stop;
+    return '收到 ' + t.length + ' 个字。\n\n（这一页只认上面那三道题的假答案；装进浏览器后，这里就是 DeepSeek 针对你选的内容给出的真实回答。）';
+  }
+
+  function hideBubble() { if (bubble) { bubble.remove(); bubble = null; } }
+
+  function showBubble(rect, text) {
+    hideBubble();
+    bubbleText = text;
+    bubble = document.createElement('div');
+    bubble.className = 'pet-bubble';
+    bubble.innerHTML = '<span class="zap">⚡</span><span>问小眼</span>';
+    bubble.style.left = Math.max(8, Math.min(rect.right - 40, window.innerWidth - 96)) + 'px';
+    bubble.style.top = Math.min(rect.bottom + 8, window.innerHeight - 44) + 'px';
+    bubble.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
+    bubble.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var t = bubbleText; hideBubble(); ask(t);
+    });
+    document.body.appendChild(bubble);
+  }
+
+  function toast(text) {
+    var el = document.createElement('div');
+    el.className = 'pet-toast';
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(function () { el.remove(); }, 2200);
+  }
+
+  function closeCard() {
+    timers.forEach(clearInterval); timers = [];
+    if (card) { card.remove(); card = null; }
+  }
+
+  function ask(text) {
+    closeCard();
+    var root = document.createElement('div');
+    root.className = 'pet-card';
+    root.innerHTML =
+      '<div class="pet-head"><span class="pet-dot busy"></span>' +
+      '<span class="pet-label">小眼 · 选中的 ' + text.length + ' 字</span>' +
+      '<span class="pet-hint">Alt+S 再问</span><button class="pet-x">×</button></div>' +
+      '<div class="pet-body"><p class="dim">思考中…</p></div>' +
+      '<div class="pet-foot">' +
+      '<button class="pet-btn primary" data-a="copy">复制答案</button>' +
+      '<button class="pet-btn" data-a="copyq">复制题目</button>' +
+      '<button class="pet-btn" data-a="again">重新问</button>' +
+      '</div>';
+    var p = cardPos || { x: Math.max(8, window.innerWidth - 410), y: Math.max(16, window.innerHeight * 0.12) };
+    root.style.left = Math.max(8, Math.min(p.x, window.innerWidth - 400)) + 'px';
+    root.style.top = Math.max(8, Math.min(p.y, window.innerHeight - 140)) + 'px';
+    document.body.appendChild(root);
+    card = root;
+
+    var body = root.querySelector('.pet-body');
+    var dot = root.querySelector('.pet-dot');
+    var answer = pickAnswer(text);
+
+    root.querySelector('.pet-x').onclick = closeCard;
+    root.querySelector('[data-a="copy"]').onclick = function () {
+      navigator.clipboard.writeText(answer).then(function () { toast('答案已复制'); }, function () { toast('复制失败，手动选中吧'); });
+    };
+    root.querySelector('[data-a="copyq"]').onclick = function () {
+      navigator.clipboard.writeText(text).then(function () { toast('题目已复制'); }, function () {});
+    };
+    root.querySelector('[data-a="again"]').onclick = function () { ask(text); };
+
+    var dragging = null, head = root.querySelector('.pet-head');
+    head.addEventListener('mousedown', function (e) {
+      if (e.target.className === 'pet-x') return;
+      var r = root.getBoundingClientRect();
+      dragging = { dx: e.clientX - r.left, dy: e.clientY - r.top };
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var nx = Math.max(4, Math.min(e.clientX - dragging.dx, window.innerWidth - 60));
+      var ny = Math.max(4, Math.min(e.clientY - dragging.dy, window.innerHeight - 40));
+      root.style.left = nx + 'px'; root.style.top = ny + 'px';
+      cardPos = { x: nx, y: ny };
+    });
+    window.addEventListener('mouseup', function () { dragging = null; });
+
+    var i = 0, iv = setInterval(function () {
+      i += 3;
+      var buf = answer.slice(0, i);
+      var html = buf.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      html = html.split('\n\n').map(function (b) { return b.trim() ? '<p>' + b.replace(/\n/g, '<br>') + '</p>' : ''; }).join('');
+      body.innerHTML = html + '<span class="pet-caret"></span>';
+      body.scrollTop = body.scrollHeight;
+      if (i >= answer.length) {
+        clearInterval(iv);
+        dot.className = 'pet-dot';
+        body.innerHTML = html + '<p class="dim">已复制到剪贴板</p>';
+        navigator.clipboard.writeText(answer).catch(function () {});
+      }
+    }, 24);
+    timers.push(iv);
+  }
+
+  document.addEventListener('mouseup', function (e) {
+    if (card && card.contains(e.target)) return;
+    setTimeout(function () {
+      var sel = window.getSelection();
+      var t = sel ? String(sel.toString()) : '';
+      var rect = sel && sel.rangeCount ? sel.getRangeAt(0).getBoundingClientRect() : null;
+      if (t.trim().length < 8 || !rect || (!rect.width && !rect.height)) { hideBubble(); return; }
+      showBubble(rect, t.trim());
+    }, 10);
+  });
+
+  document.addEventListener('mousedown', function (e) {
+    if (bubble && e.target !== bubble) hideBubble();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { hideBubble(); closeCard(); }
+  });
+
+  window.addEventListener('scroll', hideBubble, true);
+})();
+</script>
+</body>
+</html>
